@@ -23,6 +23,8 @@ include_directories(${STB_INCLUDE_DIRS})
 ExternalProject_Add(glm
   GIT_REPOSITORY    git@github.com:g-truc/glm.git
   GIT_TAG           0.9.9.7 
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
   INSTALL_COMMAND ""    
 )
 ExternalProject_Get_Property(glm SOURCE_DIR)

@@ -10,7 +10,6 @@ class HittableList : public Hittable
     std::vector<std::shared_ptr<Hittable>> v_;
 
 public:
-    HittableList() {}
     HittableList(std::initializer_list<std::shared_ptr<Hittable>> l) : v_(l) {}
 
     virtual bool hit(const Ray &r, float tmin, float tmax, HitRecord &rec) const;
