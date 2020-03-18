@@ -20,10 +20,10 @@ public:
           vertical_(vertical),
           origin_(origin) {}
 
-    Camera() : Camera(glm::vec3(-2.0f, -1.0f, -1.0f),
-                      glm::vec3(4.0f, 0.0f, 0.0f),
-                      glm::vec3(0.0f, 2.0f, 0.0f),
-                      glm::vec3(0.0f, 0.0f, 0.0f)) {}
+    Camera() : Camera(Eigen::Vector3f(-2.0f, -1.0f, -1.0f),
+                      Eigen::Vector3f(4.0f, 0.0f, 0.0f),
+                      Eigen::Vector3f(0.0f, 2.0f, 0.0f),
+                      Eigen::Vector3f(0.0f, 0.0f, 0.0f)) {}
 
     Ray getRay(float u, float v) const
     {

@@ -1,25 +1,25 @@
 #ifndef _SPHERE_H_
 #define _SPHERE_H_
 #include <cmath>
-#include <glm/glm.hpp>
+#include <Eigen/Dense>
 #include "hittable.h"
 
 class Sphere : public Hittable
 {
-    glm::vec3 center_;
+    Eigen::Vector3f center_;
     float radius_;
 
 public:
-    Sphere(glm::vec3 center, float r) : center_(center), radius_(r) {}
+    Sphere(Eigen::Vector3f center, float r) : center_(center), radius_(r) {}
     virtual bool hit(const Ray &r, float tmin, float tmax, HitRecord &rec) const;
 };
 
 bool Sphere::hit(const Ray &r, float tmin, float tmax, HitRecord &rec) const
 {
-    glm::vec3 oc = r.origin() - center_;
-    float a = glm::dot(r.direction(), r.direction());
-    float b = glm::dot(oc, r.direction());
-    float c = glm::dot(oc, oc) - radius_ * radius_;
+    Eigen::Vector3f oc = r.origin() - center_;
+    float a = r.direction().dot(r.direction());
+    float b = oc.dot(r.direction());
+    float c = oc.dot(oc) - radius_ * radius_;
     float discriminant = b * b - a * c;
     if (discriminant > 0)
     {

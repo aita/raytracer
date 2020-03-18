@@ -1,18 +1,18 @@
 #ifndef _RAY_H_
 #define _RAY_H_
-#include <glm/vec3.hpp>
+#include <Eigen/Dense>
 
 class Ray
 {
-    glm::vec3 Origin;
-    glm::vec3 Direction;
+    Eigen::Vector3f origin_;
+    Eigen::Vector3f direction_;
 
 public:
     Ray() {}
-    Ray(const glm::vec3 &a, const glm::vec3 &b) : Origin(a), Direction(b) {}
-    glm::vec3 origin() const { return Origin; }
-    glm::vec3 direction() const { return Direction; }
-    glm::vec3 pointAtParameter(float t) const { return Origin + t * Direction; }
+    Ray(const Eigen::Vector3f &a, const Eigen::Vector3f &b) : origin_(a), direction_(b) {}
+    Eigen::Vector3f origin() const { return origin_; }
+    Eigen::Vector3f direction() const { return direction_; }
+    Eigen::Vector3f pointAtParameter(float t) const { return origin_ + t * direction_; }
 };
 
 #endif

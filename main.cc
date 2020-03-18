@@ -1,9 +1,9 @@
 #include "config.h"
-#include <limits.h>
+#include <cfloat>
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <glm/glm.hpp>
+#include <Eigen/Dense>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
@@ -14,22 +14,22 @@
 #include "camera.h"
 #include "random.h"
 
-glm::vec3 RandomInUnitSphere()
+Eigen::Vector3f RandomInUnitSphere()
 {
-  glm::vec3 p;
+  Eigen::Vector3f p;
   do
   {
-    p = 2.f * glm::vec3(Random<double>(), Random<double>(), Random<double>()) - glm::vec3(1.f, 1.f, 1.f);
-  } while (glm::length(p) >= 1.f);
+    p = 2.f * Eigen::Vector3f(Random<double>(), Random<double>(), Random<double>()) - Eigen::Vector3f(1.f, 1.f, 1.f);
+  } while (p.squaredNorm() >= 1.f);
   return p;
 }
 
-glm::vec3 Color(const Ray &r, Hittable &world)
+Eigen::Vector3f Color(const Ray &r, Hittable &world)
 {
   HitRecord rec;
   if (world.hit(r, 0.001f, FLT_MAX, rec))
   {
-    glm::vec3 target = rec.p + rec.normal + RandomInUnitSphere();
+    Eigen::Vector3f target = rec.p + rec.normal + RandomInUnitSphere();
     return .5f * Color(Ray(rec.p, target - rec.p), world);
   }
   else
@@ -48,8 +48,8 @@ int main(int argc, char **argv)
   const int nc = 3;
 
   HittableList world = {
-      std::make_shared<Sphere>(glm::vec3(0.f, 0.f, -1.f), .5f),
-      std::make_shared<Sphere>(glm::vec3(0.f, -100.5f, -1.f), 100.f),
+      std::make_shared<Sphere>(Eigen::Vector3f(0.f, 0.f, -1.f), .5f),
+      std::make_shared<Sphere>(Eigen::Vector3f(0.f, -100.5f, -1.f), 100.f),
   };
   Camera camera;
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   {
     for (int i = 0; i < nx; ++i)
     {
-      glm::vec3 color(0.f, 0.f, 0.f);
+      Eigen::Vector3f color(0.f, 0.f, 0.f);
       for (int s = 0; s < ns; ++s)
       {
         auto u = float(i + Random<double>()) / float(nx);
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
         color += Color(ray, world);
       }
       color /= float(ns);
-      color = glm::sqrt(color);
+      color = color.cwiseSqrt();
 
       pixels[index++] = uint8_t(255.99f * color[0]);
       pixels[index++] = uint8_t(255.99f * color[1]);
