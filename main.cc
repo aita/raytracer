@@ -14,12 +14,23 @@
 #include "camera.h"
 #include "random.h"
 
+glm::vec3 RandomInUnitSphere()
+{
+  glm::vec3 p;
+  do
+  {
+    p = 2.f * glm::vec3(Random<double>(), Random<double>(), Random<double>()) - glm::vec3(1.f, 1.f, 1.f);
+  } while (glm::length(p) >= 1.f);
+  return p;
+}
+
 glm::vec3 Color(const Ray &r, Hittable &world)
 {
   HitRecord rec;
-  if (world.hit(r, 0.f, FLT_MAX, rec))
+  if (world.hit(r, 0.001f, FLT_MAX, rec))
   {
-    return .5f * glm::vec3(rec.normal.x + 1.f, rec.normal.y + 1.f, rec.normal.z + 1.f);
+    glm::vec3 target = rec.p + rec.normal + RandomInUnitSphere();
+    return .5f * Color(Ray(rec.p, target - rec.p), world);
   }
   else
   {
@@ -42,8 +53,7 @@ int main(int argc, char **argv)
   };
   Camera camera;
 
-  std::vector<uint8_t>
-      pixels(nx * ny * nc);
+  std::vector<uint8_t> pixels(nx * ny * nc);
   size_t index = 0;
   for (int j = ny - 1; j >= 0; --j)
   {
@@ -58,6 +68,7 @@ int main(int argc, char **argv)
         color += Color(ray, world);
       }
       color /= float(ns);
+      color = glm::sqrt(color);
 
       pixels[index++] = uint8_t(255.99f * color[0]);
       pixels[index++] = uint8_t(255.99f * color[1]);
