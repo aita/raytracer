@@ -6,7 +6,6 @@ project(raytracer VERSION 0.1)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-configure_file(config.h.in config.h)
 
 include(ExternalProject)
 ExternalProject_Add(stb
@@ -31,8 +30,10 @@ ExternalProject_Get_Property(Eigen3 SOURCE_DIR)
 set(EIGEN3_INCLUDE_DIR ${SOURCE_DIR})
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+configure_file(src/config.h.in config.h)
+file(GLOB_RECURSE SOURCES src/*.cc src/*.h)
 
-add_executable(raytracer main.cc)
+add_executable(raytracer ${SOURCES})
 add_dependencies(raytracer stb)
 add_dependencies(raytracer Eigen3)
 target_include_directories(raytracer PUBLIC "${PROJECT_BINARY_DIR}")
