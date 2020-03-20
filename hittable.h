@@ -1,5 +1,5 @@
-#ifndef _HITTABLE_H_
-#define _HITTABLE_H_
+#ifndef HITTABLE_H_
+#define HITTABLE_H_
 
 #include "ray.h"
 

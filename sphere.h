@@ -1,17 +1,18 @@
-#ifndef _SPHERE_H_
-#define _SPHERE_H_
+#ifndef SPHERE_H_
+#define SPHERE_H_
 #include <Eigen/Dense>
 #include <cmath>
 
 #include "hittable.h"
 
 class Sphere : public Hittable {
-  Eigen::Vector3f center_;
-  float radius_;
-
  public:
   Sphere(Eigen::Vector3f center, float r) : center_(center), radius_(r) {}
   virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const;
+
+ private:
+  Eigen::Vector3f center_;
+  float radius_;
 };
 
 bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
@@ -21,16 +22,16 @@ bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
   float c = oc.dot(oc) - radius_ * radius_;
   float discriminant = b * b - a * c;
   if (discriminant > 0) {
-    float temp = (-b - std::sqrt(discriminant)) / a;
-    if (temp < tmax && temp > tmin) {
-      rec.t = temp;
+    float tmp = (-b - std::sqrt(discriminant)) / a;
+    if (tmp < tmax && tmp > tmin) {
+      rec.t = tmp;
       rec.p = r.pointAtParameter(rec.t);
       rec.normal = (rec.p - center_) / radius_;
       return true;
     }
-    temp = (-b + std::sqrt(discriminant)) / a;
-    if (temp < tmax && temp > tmin) {
-      rec.t = temp;
+    tmp = (-b + std::sqrt(discriminant)) / a;
+    if (tmp < tmax && tmp > tmin) {
+      rec.t = tmp;
       rec.p = r.pointAtParameter(rec.t);
       rec.normal = (rec.p - center_) / radius_;
       return true;

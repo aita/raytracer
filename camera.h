@@ -1,20 +1,15 @@
-#ifndef _CAMERA_H_
-#define _CAMERA_H_
+#ifndef CAMERA_H_
+#define CAMERA_H_
 
 #include "ray.h"
 
 class Camera {
-  Eigen::Vector3f lower_left_corner_;
-  Eigen::Vector3f horizontal_;
-  Eigen::Vector3f vertical_;
-  Eigen::Vector3f origin_;
-
  public:
-  Camera(Eigen::Vector3f lowerLeftCorner,
+  Camera(Eigen::Vector3f lower_left_corner,
          Eigen::Vector3f horizontal,
          Eigen::Vector3f vertical,
          Eigen::Vector3f origin)
-      : lower_left_corner_(lowerLeftCorner),
+      : lower_left_corner_(lower_left_corner),
         horizontal_(horizontal),
         vertical_(vertical),
         origin_(origin) {}
@@ -29,6 +24,12 @@ class Camera {
     return Ray(origin_,
                lower_left_corner_ + u * horizontal_ + v * vertical_ - origin_);
   }
+
+ private:
+  Eigen::Vector3f lower_left_corner_;
+  Eigen::Vector3f horizontal_;
+  Eigen::Vector3f vertical_;
+  Eigen::Vector3f origin_;
 };
 
 #endif

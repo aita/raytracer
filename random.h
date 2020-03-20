@@ -1,5 +1,5 @@
-#ifndef _RANDOM_H_
-#define _RANDOM_H_
+#ifndef RANDOM_H_
+#define RANDOM_H_
 
 #include <functional>
 #include <random>

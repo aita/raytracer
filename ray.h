@@ -1,20 +1,21 @@
-#ifndef _RAY_H_
-#define _RAY_H_
+#ifndef RAY_H_
+#define RAY_H_
 #include <Eigen/Dense>
 
 class Ray {
-  Eigen::Vector3f origin_;
-  Eigen::Vector3f direction_;
-
  public:
   Ray() {}
-  Ray(const Eigen::Vector3f& a, const Eigen::Vector3f& b)
-      : origin_(a), direction_(b) {}
+  Ray(const Eigen::Vector3f& origin, const Eigen::Vector3f& direction)
+      : origin_(origin), direction_(direction) {}
   Eigen::Vector3f origin() const { return origin_; }
   Eigen::Vector3f direction() const { return direction_; }
   Eigen::Vector3f pointAtParameter(float t) const {
     return origin_ + t * direction_;
   }
+
+ private:
+  Eigen::Vector3f origin_;
+  Eigen::Vector3f direction_;
 };
 
 #endif

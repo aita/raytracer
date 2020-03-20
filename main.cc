@@ -4,12 +4,11 @@
 #include <iostream>
 #include <vector>
 
-#include "config.h"
-
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
 #include "camera.h"
+#include "config.h"
 #include "hittable_list.h"
 #include "random.h"
 #include "ray.h"
