@@ -9,6 +9,7 @@
 
 #include "camera.h"
 #include "config.h"
+#include "dielectric.h"
 #include "hittable_list.h"
 #include "lambertian.h"
 #include "metal.h"
@@ -25,7 +26,7 @@ Eigen::Vector3f Color(const Ray& r, Hittable& world, int depth) {
         rec.material->get().scatter(r, rec, attenuation, scattered)) {
       return attenuation.cwiseProduct(Color(scattered, world, depth + 1));
     } else {
-      return Eigen::Vector3f(0.f, 0.f, 0.f);
+      return Eigen::Vector3f::Zero();
     }
   } else {
     Eigen::Vector3f unit_direction = r.direction().normalized();
@@ -44,16 +45,17 @@ int main(int argc, char** argv) {
   HittableList world = {
       std::make_shared<Sphere>(
           Eigen::Vector3f(0.f, 0.f, -1.f), .5f,
-          std::make_shared<Lambertian>(Eigen::Vector3f(0.8f, 0.3f, 0.3f))),
+          std::make_shared<Lambertian>(Eigen::Vector3f(0.1f, 0.2f, 0.5f))),
       std::make_shared<Sphere>(
           Eigen::Vector3f(0.f, -100.5f, -1.f), 100.f,
           std::make_shared<Lambertian>(Eigen::Vector3f(0.8f, 0.8f, 0.0f))),
       std::make_shared<Sphere>(
           Eigen::Vector3f(1.f, 0.f, -1.f), .5f,
           std::make_shared<Metal>(Eigen::Vector3f(0.8f, 0.6f, 0.2f), 0.3f)),
-      std::make_shared<Sphere>(
-          Eigen::Vector3f(-1.f, 0.f, -1.f), .5f,
-          std::make_shared<Metal>(Eigen::Vector3f(0.8f, 0.8f, 0.8f), 1.0f)),
+      std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), .5f,
+                               std::make_shared<Dielectric>(1.5f)),
+      std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), -0.45f,
+                               std::make_shared<Dielectric>(1.5f)),
 
   };
   Camera camera;
