@@ -57,9 +57,12 @@ int main(int argc, char** argv) {
       std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), -0.45f,
                                std::make_shared<Dielectric>(1.5f)),
   };
-  Camera camera(Eigen::Vector3f(-2.f, 2.f, 1.f),
-                Eigen::Vector3f(0.f, 0.f, -1.f), Eigen::Vector3f(0.f, 1.f, 0.f),
-                90.f, float(nx) / float(ny));
+  auto look_from = Eigen::Vector3f(3.f, 3.f, 2.f);
+  auto look_at = Eigen::Vector3f(0.f, 0.f, -1.f);
+  float distance_to_focus = (look_from - look_at).norm();
+  float aperture = 2.0f;
+  Camera camera(look_from, look_at, Eigen::Vector3f(0.f, 1.f, 0.f), 20.f,
+                float(nx) / float(ny), aperture, distance_to_focus);
 
   std::vector<uint8_t> pixels(nx * ny * nc);
   size_t index = 0;
