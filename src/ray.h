@@ -18,4 +18,8 @@ class Ray {
   Eigen::Vector3f direction_;
 };
 
+Eigen::Vector3f reflect(const Eigen::Vector3f& v, const Eigen::Vector3f& n) {
+  return v - 2.f * v.dot(n) * n;
+}
+
 #endif

@@ -10,25 +10,23 @@
 #include "camera.h"
 #include "config.h"
 #include "hittable_list.h"
+#include "lambertian.h"
+#include "metal.h"
 #include "random.h"
 #include "ray.h"
 #include "sphere.h"
 
-Eigen::Vector3f RandomInUnitSphere() {
-  Eigen::Vector3f p;
-  do {
-    p = 2.f * Eigen::Vector3f(Random<double>(), Random<double>(),
-                              Random<double>()) -
-        Eigen::Vector3f(1.f, 1.f, 1.f);
-  } while (p.squaredNorm() >= 1.f);
-  return p;
-}
-
-Eigen::Vector3f Color(const Ray& r, Hittable& world) {
+Eigen::Vector3f Color(const Ray& r, Hittable& world, int depth) {
   HitRecord rec;
   if (world.hit(r, 0.001f, FLT_MAX, rec)) {
-    Eigen::Vector3f target = rec.p + rec.normal + RandomInUnitSphere();
-    return .5f * Color(Ray(rec.p, target - rec.p), world);
+    Ray scattered;
+    Eigen::Vector3f attenuation;
+    if (depth < 50 &&
+        rec.material->get().scatter(r, rec, attenuation, scattered)) {
+      return attenuation.cwiseProduct(Color(scattered, world, depth + 1));
+    } else {
+      return Eigen::Vector3f(0.f, 0.f, 0.f);
+    }
   } else {
     Eigen::Vector3f unit_direction = r.direction().normalized();
     float t = 0.5f * (unit_direction.y() + 1.0f);
@@ -44,8 +42,19 @@ int main(int argc, char** argv) {
   const int nc = 3;
 
   HittableList world = {
-      std::make_shared<Sphere>(Eigen::Vector3f(0.f, 0.f, -1.f), .5f),
-      std::make_shared<Sphere>(Eigen::Vector3f(0.f, -100.5f, -1.f), 100.f),
+      std::make_shared<Sphere>(
+          Eigen::Vector3f(0.f, 0.f, -1.f), .5f,
+          std::make_shared<Lambertian>(Eigen::Vector3f(0.8f, 0.3f, 0.3f))),
+      std::make_shared<Sphere>(
+          Eigen::Vector3f(0.f, -100.5f, -1.f), 100.f,
+          std::make_shared<Lambertian>(Eigen::Vector3f(0.8f, 0.8f, 0.0f))),
+      std::make_shared<Sphere>(
+          Eigen::Vector3f(1.f, 0.f, -1.f), .5f,
+          std::make_shared<Metal>(Eigen::Vector3f(0.8f, 0.6f, 0.2f), 0.3f)),
+      std::make_shared<Sphere>(
+          Eigen::Vector3f(-1.f, 0.f, -1.f), .5f,
+          std::make_shared<Metal>(Eigen::Vector3f(0.8f, 0.8f, 0.8f), 1.0f)),
+
   };
   Camera camera;
 
@@ -58,7 +67,7 @@ int main(int argc, char** argv) {
         auto u = float(i + Random<double>()) / float(nx);
         auto v = float(j + Random<double>()) / float(ny);
         auto ray = camera.getRay(u, v);
-        color += Color(ray, world);
+        color += Color(ray, world, 0);
       }
       color /= float(ns);
       color = color.cwiseSqrt();

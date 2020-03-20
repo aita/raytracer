@@ -12,4 +12,14 @@ inline T Random() {
   return randGenerator();
 }
 
+Eigen::Vector3f RandomInUnitSphere() {
+  Eigen::Vector3f p;
+  do {
+    p = 2.f * Eigen::Vector3f(Random<double>(), Random<double>(),
+                              Random<double>()) -
+        Eigen::Vector3f(1.f, 1.f, 1.f);
+  } while (p.squaredNorm() >= 1.f);
+  return p;
+}
+
 #endif

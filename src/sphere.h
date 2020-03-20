@@ -2,17 +2,20 @@
 #define SPHERE_H_
 #include <Eigen/Dense>
 #include <cmath>
+#include <memory>
 
 #include "hittable.h"
 
 class Sphere : public Hittable {
  public:
-  Sphere(Eigen::Vector3f center, float r) : center_(center), radius_(r) {}
+  Sphere(Eigen::Vector3f center, float r, std::shared_ptr<Material> material)
+      : center_(center), radius_(r), material_(material) {}
   virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const;
 
  private:
   Eigen::Vector3f center_;
   float radius_;
+  std::shared_ptr<Material> material_;
 };
 
 bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
@@ -27,6 +30,7 @@ bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
       rec.t = tmp;
       rec.p = r.pointAtParameter(rec.t);
       rec.normal = (rec.p - center_) / radius_;
+      rec.material = *material_;
       return true;
     }
     tmp = (-b + std::sqrt(discriminant)) / a;
@@ -34,6 +38,7 @@ bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
       rec.t = tmp;
       rec.p = r.pointAtParameter(rec.t);
       rec.normal = (rec.p - center_) / radius_;
+      rec.material = *material_;
       return true;
     }
   }
