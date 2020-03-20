@@ -56,9 +56,10 @@ int main(int argc, char** argv) {
                                std::make_shared<Dielectric>(1.5f)),
       std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), -0.45f,
                                std::make_shared<Dielectric>(1.5f)),
-
   };
-  Camera camera;
+  Camera camera(Eigen::Vector3f(-2.f, 2.f, 1.f),
+                Eigen::Vector3f(0.f, 0.f, -1.f), Eigen::Vector3f(0.f, 1.f, 0.f),
+                90.f, float(nx) / float(ny));
 
   std::vector<uint8_t> pixels(nx * ny * nc);
   size_t index = 0;
