@@ -36,27 +36,60 @@ Eigen::Vector3f Color(const Ray& r, Hittable& world, int depth) {
   }
 }
 
+std::unique_ptr<Hittable> RandomScene() {
+  std::vector<std::unique_ptr<Hittable>> v;
+  v.emplace_back(std::make_unique<Sphere>(
+      Eigen::Vector3f(0.f, -1000.f, 0.f), 1000.f,
+      std::make_unique<Lambertian>(Eigen::Vector3f(.5f, .5f, .5f))));
+  for (int a = -11; a < 11; ++a) {
+    for (int b = -11; b < 11; ++b) {
+      float choose_material = Random<double>();
+      Eigen::Vector3f center(a + .9f * Random<double>(), .2f,
+                             b + .9f + Random<double>());
+      if ((center - Eigen::Vector3f(4.f, .2f, 0.f)).norm() > .9f) {
+        if (choose_material < .8f)  // diffuse
+        {
+          v.emplace_back(std::make_unique<Sphere>(
+              center, 0.2f,
+              std::make_unique<Lambertian>(
+                  Eigen::Vector3f(Random<double>() * Random<double>(),
+                                  Random<double>() * Random<double>(),
+                                  Random<double>() * Random<double>()))));
+
+        } else if (choose_material < .95f)  // metal
+        {
+          v.emplace_back(std::make_unique<Sphere>(
+              center, 0.2f,
+              std::make_unique<Metal>(
+                  Eigen::Vector3f(.5f * (1.f + Random<double>()),
+                                  .5f * (1.f + Random<double>()),
+                                  .5f * (1.f + Random<double>())),
+                  .5f * Random<double>())));
+        } else {  // glass
+          v.emplace_back(std::make_unique<Sphere>(
+              center, 0.2f, std::make_unique<Dielectric>(1.5f)));
+        }
+      }
+    }
+  }
+  v.emplace_back(std::make_unique<Sphere>(Eigen::Vector3f(0.f, 1.f, 0.f), 1.f,
+                                          std::make_unique<Dielectric>(1.5f)));
+  v.emplace_back(std::make_unique<Sphere>(
+      Eigen::Vector3f(-4.f, 1.f, 0.f), 1.f,
+      std::make_unique<Lambertian>(Eigen::Vector3f(.4f, .2f, .1f))));
+  v.emplace_back(std::make_unique<Sphere>(
+      Eigen::Vector3f(4.f, 1.f, 0.f), 1.f,
+      std::make_unique<Metal>(Eigen::Vector3f(.7f, .6f, .5f), 0.f)));
+  return std::make_unique<HittableList>(std::move(v));
+}
+
 int main(int argc, char** argv) {
   const int nx = 200;
   const int ny = 100;
   const int ns = 100;
   const int nc = 3;
 
-  HittableList world = {
-      std::make_shared<Sphere>(
-          Eigen::Vector3f(0.f, 0.f, -1.f), .5f,
-          std::make_shared<Lambertian>(Eigen::Vector3f(0.1f, 0.2f, 0.5f))),
-      std::make_shared<Sphere>(
-          Eigen::Vector3f(0.f, -100.5f, -1.f), 100.f,
-          std::make_shared<Lambertian>(Eigen::Vector3f(0.8f, 0.8f, 0.0f))),
-      std::make_shared<Sphere>(
-          Eigen::Vector3f(1.f, 0.f, -1.f), .5f,
-          std::make_shared<Metal>(Eigen::Vector3f(0.8f, 0.6f, 0.2f), 0.3f)),
-      std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), .5f,
-                               std::make_shared<Dielectric>(1.5f)),
-      std::make_shared<Sphere>(Eigen::Vector3f(-1.f, 0.f, -1.f), -0.45f,
-                               std::make_shared<Dielectric>(1.5f)),
-  };
+  auto world = RandomScene();
   auto look_from = Eigen::Vector3f(3.f, 3.f, 2.f);
   auto look_at = Eigen::Vector3f(0.f, 0.f, -1.f);
   float distance_to_focus = (look_from - look_at).norm();
@@ -73,7 +106,7 @@ int main(int argc, char** argv) {
         auto u = float(i + Random<double>()) / float(nx);
         auto v = float(j + Random<double>()) / float(ny);
         auto ray = camera.getRay(u, v);
-        color += Color(ray, world, 0);
+        color += Color(ray, *world, 0);
       }
       color /= float(ns);
       color = color.cwiseSqrt();

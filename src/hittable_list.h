@@ -8,12 +8,12 @@
 
 class HittableList : public Hittable {
  public:
-  HittableList(std::initializer_list<std::shared_ptr<Hittable>> l) : v_(l) {}
+  HittableList(std::vector<std::unique_ptr<Hittable>>&& v) : v_(std::move(v)) {}
 
   virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const;
 
  private:
-  std::vector<std::shared_ptr<Hittable>> v_;
+  std::vector<std::unique_ptr<Hittable>> v_;
 };
 
 bool HittableList::hit(const Ray& r,

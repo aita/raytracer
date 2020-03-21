@@ -8,14 +8,14 @@
 
 class Sphere : public Hittable {
  public:
-  Sphere(Eigen::Vector3f center, float r, std::shared_ptr<Material> material)
-      : center_(center), radius_(r), material_(material) {}
+  Sphere(Eigen::Vector3f center, float r, std::unique_ptr<Material>&& material)
+      : center_(center), radius_(r), material_(std::move(material)) {}
   virtual bool hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const;
 
  private:
   Eigen::Vector3f center_;
   float radius_;
-  std::shared_ptr<Material> material_;
+  std::unique_ptr<Material> material_;
 };
 
 bool Sphere::hit(const Ray& r, float tmin, float tmax, HitRecord& rec) const {
