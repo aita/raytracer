@@ -84,23 +84,24 @@ std::unique_ptr<Hittable> RandomScene() {
 }
 
 int main(int argc, char** argv) {
-  const int nx = 200;
-  const int ny = 100;
-  const int ns = 100;
+  const int nx = 1200;
+  const int ny = 800;
+  const int ns = 10;
   const int nc = 3;
 
   auto world = RandomScene();
-  auto look_from = Eigen::Vector3f(3.f, 3.f, 2.f);
-  auto look_at = Eigen::Vector3f(0.f, 0.f, -1.f);
-  float distance_to_focus = (look_from - look_at).norm();
-  float aperture = 2.0f;
+  auto look_from = Eigen::Vector3f(13.f, 2.f, 3.f);
+  auto look_at = Eigen::Vector3f(0.f, 0.f, 0.f);
+  float distance_to_focus = 10.f;
+  float aperture = .1f;
   Camera camera(look_from, look_at, Eigen::Vector3f(0.f, 1.f, 0.f), 20.f,
                 float(nx) / float(ny), aperture, distance_to_focus);
 
   std::vector<uint8_t> pixels(nx * ny * nc);
-  size_t index = 0;
+#pragma omp parallel for collapse(2)
   for (int j = ny - 1; j >= 0; --j) {
     for (int i = 0; i < nx; ++i) {
+      int k = i + (ny - 1 - j) * nx;
       Eigen::Vector3f color(0.f, 0.f, 0.f);
       for (int s = 0; s < ns; ++s) {
         auto u = float(i + Random<double>()) / float(nx);
@@ -111,9 +112,9 @@ int main(int argc, char** argv) {
       color /= float(ns);
       color = color.cwiseSqrt();
 
-      pixels[index++] = uint8_t(255.99f * color[0]);
-      pixels[index++] = uint8_t(255.99f * color[1]);
-      pixels[index++] = uint8_t(255.99f * color[2]);
+      pixels[k * 3] = uint8_t(255.99f * color[0]);
+      pixels[k * 3 + 1] = uint8_t(255.99f * color[1]);
+      pixels[k * 3 + 2] = uint8_t(255.99f * color[2]);
     }
   }
 

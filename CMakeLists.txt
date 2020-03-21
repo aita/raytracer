@@ -37,3 +37,8 @@ add_executable(raytracer ${SOURCES})
 add_dependencies(raytracer stb)
 add_dependencies(raytracer Eigen3)
 target_include_directories(raytracer PUBLIC "${PROJECT_BINARY_DIR}")
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(raytracer PUBLIC OpenMP::OpenMP_CXX)
+endif()
