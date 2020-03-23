@@ -9,10 +9,8 @@
 
 #include "camera.h"
 #include "config.h"
-#include "dielectric.h"
 #include "hittable_list.h"
-#include "lambertian.h"
-#include "metal.h"
+#include "material.h"
 #include "random.h"
 #include "ray.h"
 #include "sphere.h"
